@@ -48,7 +48,6 @@ export function DataTable({
   data,
   pageSizeOptions = [10, 20, 30, 50],
   onAddSection,
-  onCustomizeColumns,
 }: {
   tabs: { value: string; label: string; badge?: number }[]
   columns: any[]

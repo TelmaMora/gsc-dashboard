@@ -59,7 +59,7 @@ export const columns: ColumnDef<OutlineRow>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
+    cell: ({ }) => (
       <div className="flex gap-2 justify-end">
         <Button variant="ghost" size="icon">
           <IconPencil className="w-4 h-4" />

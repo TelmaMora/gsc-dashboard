@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import DashboardLayout from "@/layouts/DashboardLayout"
 import {
   Dialog,
@@ -61,7 +61,7 @@ export default function Cortes() {
   const [conVisita, setConVisita] = useState<boolean | null>(null)
 
   // Simulación de visitas
-  const [visitas, setVisitas] = useState<Visita[]>([
+  const [visitas] = useState<Visita[]>([
     {
       id: 1,
       fecha: "2025-10-10",
@@ -81,12 +81,12 @@ export default function Cortes() {
   ])
 
   // Simulación de cuadrillas y transportes
-  const [cuadrillas, setCuadrillas] = useState([
+  const [cuadrillas] = useState([
     { id: 1, nombre: "Cuadrilla A" },
     { id: 2, nombre: "Cuadrilla B" },
   ])
 
-  const [transportes, setTransportes] = useState([
+  const [transportes] = useState([
     { id: 1, nombre: "Camión 12" },
     { id: 2, nombre: "Camioneta Norte" },
   ])
