@@ -60,11 +60,12 @@ export default function Pedidos() {
     tipoCaja: "",
     pallets: 0,
   })
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   // 🔹 Cargar pedidos
   const cargarPedidos = async () => {
     try {
-      const { data } = await axios.get("http://localhost:4000/api/pedidos")
+      const { data } = await axios.get(`${apiUrl}/api/pedidos`)
       setPedidos(data)
     } catch (error) {
       console.error("Error cargando pedidos:", error)
@@ -74,7 +75,7 @@ export default function Pedidos() {
   // 📦 Cargar cajas para el combobox
   const cargarCajas = async () => {
     try {
-      const { data } = await axios.get("http://localhost:4000/api/cajas")
+      const { data } = await axios.get(`${apiUrl}/api/cajas`)
       setCajas(data)
     } catch (error) {
       console.error("Error al cargar cajas:", error)
@@ -89,7 +90,7 @@ export default function Pedidos() {
   // ➕ Guardar pedido
   const agregarPedido = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/api/pedidos", nuevo)
+      const response = await axios.post(`${apiUrl}/api/pedidos`, nuevo)
       setPedidos([...pedidos, response.data])
       setDialogOpen(false)
       setNuevo({

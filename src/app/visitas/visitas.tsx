@@ -60,7 +60,7 @@ export default function Visitas() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [visitas, setVisitas] = useState<Visita[]>([])
   const [proveedores, setProveedores] = useState<Proveedor[]>([])
-
+const apiUrl = import.meta.env.VITE_API_URL;
   const [nueva, setNueva] = useState<Omit<Visita, "id">>({
     fecha: "",
     tipoFruta: "",
@@ -80,7 +80,7 @@ export default function Visitas() {
   // 🔹 Cargar visitas
   const cargarVisitas = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/visitas")
+      const res = await fetch(`${apiUrl}/api/visitas`)
       const data = await res.json()
       setVisitas(data)
     } catch (error) {
@@ -91,7 +91,7 @@ export default function Visitas() {
   // 🔹 Cargar proveedores (para el Combobox)
   const cargarProveedores = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/proveedores")
+      const res = await fetch(`${apiUrl}/api/proveedores`)
       const data = await res.json()
       setProveedores(data)
     } catch (error) {
@@ -107,7 +107,7 @@ export default function Visitas() {
   // ➕ Guardar nueva visita
   const agregarVisita = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/visitas", {
+      const res = await fetch(`${apiUrl}/api/visitas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nueva),

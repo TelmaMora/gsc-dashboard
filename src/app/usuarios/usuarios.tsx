@@ -41,7 +41,8 @@ export default function CatalogoUsuarios() {
   const [passwordGenerado, setPasswordGenerado] = useState<string | null>(null)
 
   const endpoint = "usuarios"
-  const API_URL = `http://localhost:4000/api/${endpoint}`
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const API_URL = `${apiUrl}/api/${endpoint}`
 
   // 📡 Cargar usuarios
   const cargarDatos = async () => {

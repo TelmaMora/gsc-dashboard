@@ -24,13 +24,14 @@ export function LoginForm({
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-
+  const apiUrl = import.meta.env.VITE_API_URL;
+  
   const handleLoginClick = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
     try {
-      const res = await fetch("http://localhost:4000/api/auth/login", {
+      const res = await fetch(`${apiUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo: email, password }),

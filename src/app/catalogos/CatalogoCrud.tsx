@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
+
 interface CatalogoCrudProps {
   title: string
   fields: string[]
@@ -30,10 +31,12 @@ export default function CatalogoCrud({ title, fields, endpoint }: CatalogoCrudPr
     fields.reduce((acc, field) => ({ ...acc, [field]: "" }), {})
   )
   const [open, setOpen] = useState(false)
+  const apiUrl = import.meta.env.VITE_API_URL;
+
 
   // 📡 Cargar datos
   const cargarDatos = async () => {
-    const res = await fetch(`http://localhost:4000/api/${endpoint}`)
+    const res = await fetch(`${apiUrl}/api/${endpoint}`)
     const json = await res.json()
     setData(json)
   }
@@ -44,7 +47,7 @@ export default function CatalogoCrud({ title, fields, endpoint }: CatalogoCrudPr
 
   // ➕ Agregar
   const agregar = async () => {
-    await fetch(`http://localhost:4000/api/${endpoint}`, {
+    await fetch(`${apiUrl}/api/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(nuevo),
@@ -56,7 +59,7 @@ export default function CatalogoCrud({ title, fields, endpoint }: CatalogoCrudPr
 
   // 🗑️ Eliminar
   const eliminar = async (id: number) => {
-    await fetch(`http://localhost:4000/api/${endpoint}/${id}`, { method: "DELETE" })
+    await fetch(`${apiUrl}/api/${endpoint}/${id}`, { method: "DELETE" })
     cargarDatos()
   }
 
