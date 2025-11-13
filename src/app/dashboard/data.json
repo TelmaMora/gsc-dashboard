@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "name": "Company Overview",
+    "status": "Active",
+    "owner": "Alice Johnson",
+    "updatedAt": "2025-10-20T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "name": "Market Analysis",
+    "status": "Draft",
+    "owner": "Carlos Vega",
+    "updatedAt": "2025-10-15T12:00:00Z"
+  },
+  {
+    "id": "3",
+    "name": "Financial Report",
+    "status": "Inactive",
+    "owner": "Diana Pérez",
+    "updatedAt": "2025-09-30T14:30:00Z"
+  }
+]
