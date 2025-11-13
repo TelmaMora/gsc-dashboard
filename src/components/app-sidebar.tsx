@@ -30,6 +30,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { Link } from "react-router-dom"
 
 // 🔧 Menú de navegación principal
 const data = {
@@ -104,13 +105,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton asChild className="p-1.5 flex justify-center" style={{
     background: 'url("pattern-bg.png") center / cover no-repeat rgb(68, 21, 128)',
   }}>
-              <a href="/">
+              <Link to="/">
               <img
             src="Recurso-4@4x-8.png"
             alt="Green Sun Co. Logo"
             className="h-18 w-18 object-contain"
           />
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
