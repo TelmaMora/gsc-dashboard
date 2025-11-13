@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Page from "./app/dashboard/page";
 import Pedidos from "./app/pedidos/pedidos";
 import Visitas from "./app/visitas/visitas";
@@ -15,18 +15,6 @@ import Login from "./app/login/page";
 import CatalogoClientes from "./app/catalogos/Clientes";
 import CatalogoClasificaciones from "./app/catalogos/clasificaciones";
 import CatalogoUsuarios from "./app/usuarios/usuarios";
-/* import Pedidos from "@/pages/Pedidos";
-import Visitas from "@/pages/Visitas";
-import Cortes from "@/pages/Cortes";
-import Acopio from "@/pages/Acopio";
-import Cajas from "@/pages/catalogos/Cajas";
-import Pallets from "@/pages/catalogos/Pallets";
-import Proveedores from "@/pages/catalogos/Proveedores";
-import Cuadrillas from "@/pages/catalogos/Cuadrillas";
-import Transporte from "@/pages/catalogos/Transporte";
-import Programas from "@/pages/Programas";
-import HistoricoProveedores from "@/pages/HistoricoProveedores";
-import Mallas from "@/pages/Mallas"; */
 
 function App() {
   return (
@@ -34,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+
         {/* Operación */}
         <Route path="/dashboard" element={<Page />} />
         <Route path="/pedidos" element={<Pedidos />} />
@@ -41,6 +30,7 @@ function App() {
         <Route path="/cortes" element={<Cortes />} />
         <Route path="/acopio" element={<Acopio />} />
 
+        {/* Catálogos */}
         <Route path="/catalogos/proveedores" element={<CatalogoProveedores />} />
         <Route path="/catalogos/cajas" element={<CatalogoCajas />} />
         <Route path="/catalogos/pallets" element={<CatalogoPallets />} />
@@ -50,12 +40,8 @@ function App() {
         <Route path="/catalogos/clientes" element={<CatalogoClientes />} />
         <Route path="/catalogos/clasificaciones" element={<CatalogoClasificaciones />} />
 
+        {/* Usuarios */}
         <Route path="/usuarios" element={<CatalogoUsuarios />} />
-
-        {/* Programas e histórico */}
-        {/* <Route path="/programas" element={<Programas />} />
-          <Route path="/historico-proveedores" element={<HistoricoProveedores />} />
-          <Route path="/mallas" element={<Mallas />} /> */}
       </Routes>
     </Router>
   );
