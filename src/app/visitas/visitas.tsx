@@ -30,17 +30,19 @@ import { cn } from "@/lib/utils"
 // 💾 Tipos
 interface Visita {
   id: number
-  fecha: string
-  tipoFruta: string
+  tipo_fruta: string
   encargado: string
   viaticos: number
-  costoKg: number
-  codigoProveedor: number
-  proveedor: string
-  ubicacionHuerta: string
+  costo_kg: number
+  codigo_proveedor: number
+  proveedor_relacionado?: {
+    codigo: number
+    nombre: string
+  }
+  ubicacion_huerta: string
   huerta: string
-  tipoCorte: string
-  volumenCalculado: number
+  tipo_corte: string
+  volumen_calculado: number
   porcentajes: string
   observaciones: string
 }
@@ -60,19 +62,19 @@ export default function Visitas() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [visitas, setVisitas] = useState<Visita[]>([])
   const [proveedores, setProveedores] = useState<Proveedor[]>([])
-const apiUrl = import.meta.env.VITE_API_URL;
-  const [nueva, setNueva] = useState<Omit<Visita, "id">>({
-    fecha: "",
-    tipoFruta: "",
+  const apiUrl = import.meta.env.VITE_API_URL
+
+  // ⭐ Objeto de nueva visita
+  const [nueva, setNueva] = useState({
+    tipo_fruta: "",
     encargado: "",
     viaticos: 0,
-    costoKg: 0,
-    codigoProveedor: 0,
-    proveedor: "",
-    ubicacionHuerta: "",
+    costo_kg: 0,
+    codigo_proveedor: 0,
+    ubicacion_huerta: "",
     huerta: "",
-    tipoCorte: "",
-    volumenCalculado: 0,
+    tipo_corte: "",
+    volumen_calculado: 0,
     porcentajes: "",
     observaciones: "",
   })
@@ -88,7 +90,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
     }
   }
 
-  // 🔹 Cargar proveedores (para el Combobox)
+  // 🔹 Cargar proveedores
   const cargarProveedores = async () => {
     try {
       const res = await fetch(`${apiUrl}/api/proveedores`)
@@ -107,49 +109,55 @@ const apiUrl = import.meta.env.VITE_API_URL;
   // ➕ Guardar nueva visita
   const agregarVisita = async () => {
     try {
+      const payload = { ...nueva }
+      console.log("payload", payload)
       const res = await fetch(`${apiUrl}/api/visitas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nueva),
+        body: JSON.stringify(payload),
       })
 
       if (!res.ok) throw new Error("Error al guardar visita")
 
       setDialogOpen(false)
+
+      // Reset
       setNueva({
-        fecha: "",
-        tipoFruta: "",
+        tipo_fruta: "",
         encargado: "",
         viaticos: 0,
-        costoKg: 0,
-        codigoProveedor: 0,
-        proveedor: "",
-        ubicacionHuerta: "",
+        costo_kg: 0,
+        codigo_proveedor: 0,
+        ubicacion_huerta: "",
         huerta: "",
-        tipoCorte: "",
-        volumenCalculado: 0,
+        tipo_corte: "",
+        volumen_calculado: 0,
         porcentajes: "",
         observaciones: "",
       })
-      await cargarVisitas()
+
+      cargarVisitas()
     } catch (error) {
       console.error(error)
     }
   }
 
-  // 🧱 Columnas
+  // 🧱 Columnas tabla
   const columns = [
-    { accessorKey: "fecha", header: "Fecha de visita" },
-    { accessorKey: "tipoFruta", header: "Tipo de fruta" },
+    { accessorKey: "fecha", header: "Fecha" },
+    { accessorKey: "tipo_fruta", header: "Tipo de fruta" },
     { accessorKey: "encargado", header: "Encargado" },
     { accessorKey: "viaticos", header: "Viáticos" },
-    { accessorKey: "costoKg", header: "Costo/kg" },
-    { accessorKey: "codigoProveedor", header: "Código proveedor" },
-    { accessorKey: "proveedor", header: "Proveedor" },
-    { accessorKey: "ubicacionHuerta", header: "Ubicación Huerta" },
+    { accessorKey: "costo_kg", header: "Costo/kg" },
+    {
+      accessorKey: "proveedor_relacionado.nombre",
+      header: "Proveedor",
+      cell: ({ row }: any) => row.original.proveedor_relacionado?.nombre ?? "",
+    },
+    { accessorKey: "ubicacion_huerta", header: "Ubicación" },
     { accessorKey: "huerta", header: "Huerta" },
-    { accessorKey: "tipoCorte", header: "Tipo de corte" },
-    { accessorKey: "volumenCalculado", header: "Volumen Calculado" },
+    { accessorKey: "tipo_corte", header: "Tipo de corte" },
+    { accessorKey: "volumen_calculado", header: "Volumen" },
     { accessorKey: "porcentajes", header: "Porcentajes" },
     { accessorKey: "observaciones", header: "Observaciones" },
   ]
@@ -170,34 +178,34 @@ const apiUrl = import.meta.env.VITE_API_URL;
         onAddSection={() => setDialogOpen(true)}
       />
 
-      {/* 💬 Diálogo con Scroll y Combobox */}
+      {/* ----------------------------- */}
+      {/*         MODAL / DIALOG       */}
+      {/* ----------------------------- */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] p-0">
+        <DialogContent className="max-w-2xl max-h-[80vh] p-0">
           <DialogHeader className="p-4 pb-0">
             <DialogTitle>Nueva visita</DialogTitle>
           </DialogHeader>
 
           <ScrollArea className="max-h-[70vh] p-4">
-            <div className="grid gap-3">
-              {/* 👇 Combobox para proveedor */}
-              <div>
-                <Label>Código del proveedor</Label>
+            <div className="grid grid-cols-2 gap-4">
+              {/* ⭐ Combobox proveedor */}
+              <div className="col-span-2">
+                <Label>Proveedor</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       role="combobox"
-                      className={cn(
-                        "w-full justify-between",
-                        !nueva.codigoProveedor && "text-muted-foreground"
-                      )}
+                      className="w-full justify-between"
                     >
-                      {nueva.codigoProveedor
-                        ? `Código ${nueva.codigoProveedor}`
+                      {nueva.codigo_proveedor
+                        ? proveedores.find((p) => p.codigo === nueva.codigo_proveedor)?.nombre
                         : "Seleccionar proveedor"}
                       <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
                     </Button>
                   </PopoverTrigger>
+
                   <PopoverContent className="w-full p-0">
                     <Command>
                       <CommandInput placeholder="Buscar proveedor..." />
@@ -207,18 +215,17 @@ const apiUrl = import.meta.env.VITE_API_URL;
                           <CommandItem
                             key={prov.id}
                             value={prov.codigo.toString()}
-                            onSelect={() => {
+                            onSelect={() =>
                               setNueva({
                                 ...nueva,
-                                codigoProveedor: prov.codigo,
-                                proveedor: prov.nombre,
+                                codigo_proveedor: prov.codigo,
                               })
-                            }}
+                            }
                           >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                nueva.codigoProveedor === prov.codigo
+                                nueva.codigo_proveedor === prov.codigo
                                   ? "opacity-100"
                                   : "opacity-0"
                               )}
@@ -232,52 +239,52 @@ const apiUrl = import.meta.env.VITE_API_URL;
                 </Popover>
               </div>
 
-              {/* 👇 Los demás campos */}
-              {Object.keys(nueva).map((key) => {
-                if (key === "codigoProveedor" || key === "proveedor") return null
-                if (key === "observaciones") {
-                  return (
-                    <div key={key}>
-                      <Label>Observaciones</Label>
-                      <Textarea
-                        value={nueva.observaciones}
-                        onChange={(e) =>
-                          setNueva({ ...nueva, observaciones: e.target.value })
-                        }
-                      />
-                    </div>
-                  )
-                }
+              {/* CAMPOS */}
+              {[
+                ["tipo_fruta", "Tipo de fruta", "text"],
+                ["encargado", "Encargado", "text"],
+                ["viaticos", "Viáticos", "number"],
+                ["costo_kg", "Costo por kg", "number"],
+                ["ubicacion_huerta", "Ubicación de huerta", "text"],
+                ["huerta", "Huerta", "text"],
+                ["tipo_corte", "Tipo de corte", "text"],
+                ["volumen_calculado", "Volumen calculado", "number"],
+                ["porcentajes", "Porcentajes", "text"],
+              ].map(([key, label, type]) => (
+                <div key={key}>
+                  <Label>{label}</Label>
+                  <Input
+                    type={type}
+                    value={(nueva as any)[key]}
+                    onChange={(e) =>
+                      setNueva({
+                        ...nueva,
+                        [key]:
+                          type === "number"
+                            ? Number(e.target.value)
+                            : e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              ))}
 
-                return (
-                  <div key={key}>
-                    <Label className="capitalize">{key}</Label>
-                    <Input
-                      type={
-                        ["viaticos", "costoKg", "volumenCalculado"].includes(key)
-                          ? "number"
-                          : key === "fecha"
-                            ? "date"
-                            : "text"
-                      }
-                      value={nueva[key as keyof typeof nueva] as any}
-                      onChange={(e) =>
-                        setNueva({
-                          ...nueva,
-                          [key]:
-                            ["viaticos", "costoKg", "volumenCalculado"].includes(key)
-                              ? Number(e.target.value)
-                              : e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                )
-              })}
+              {/* Observaciones - full width */}
+              <div className="col-span-2">
+                <Label>Observaciones</Label>
+                <Textarea
+                  value={nueva.observaciones}
+                  onChange={(e) =>
+                    setNueva({ ...nueva, observaciones: e.target.value })
+                  }
+                />
+              </div>
 
-              <Button onClick={agregarVisita} className="mt-3">
-                Guardar
-              </Button>
+              <div className="col-span-2">
+                <Button onClick={agregarVisita} className="w-full">
+                  Guardar
+                </Button>
+              </div>
             </div>
           </ScrollArea>
         </DialogContent>

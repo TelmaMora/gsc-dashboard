@@ -56,29 +56,12 @@ interface CorteProgramado {
   observaciones: string
 }
 
-export default function Cortes() {
+export default function ProgramarCorte() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [conVisita, setConVisita] = useState<boolean | null>(null)
 
   // Simulación de visitas
-  const [visitas] = useState<Visita[]>([
-    {
-      id: 1,
-      fecha: "2025-10-10",
-      tipoFruta: "Aguacate Hass",
-      encargado: "Luis Martínez",
-      viaticos: 1000,
-      costoKg: 5.5,
-      codigoProveedor: 123,
-      proveedor: "San Pedro",
-      ubicacionHuerta: "Toluca",
-      huerta: "Huerta San Pedro",
-      tipoCorte: "Manual",
-      volumenCalculado: 25,
-      porcentajes: "100-120",
-      observaciones: "Sin incidencias",
-    },
-  ])
+  const [visitas] = useState<Visita[]>([])
 
   // Simulación de cuadrillas y transportes
   const [cuadrillas] = useState([
@@ -173,7 +156,7 @@ export default function Cortes() {
   const tabs = [{ value: "outline", label: "Listado" }]
 
   return (
-    <DashboardLayout title="Cortes">
+    <DashboardLayout title="Programar Corte">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Cortes Programados</h1>
       </div>

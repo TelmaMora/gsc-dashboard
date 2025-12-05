@@ -59,6 +59,11 @@ const data = {
     },
     {
       title: "Programar Corte",
+      url: "/programar-corte",
+      icon: IconCut,
+    },
+    {
+      title: "Corte",
       url: "/cortes",
       icon: IconCut,
     },
@@ -66,6 +71,21 @@ const data = {
       title: "Acopio Directo",
       url: "/acopio",
       icon: IconShoppingCart,
+    },
+    {
+      title: "Prestamo Cajas",
+      url: "/prestamo-cajas",
+      icon: IconShoppingCart,
+    },
+    {
+      title: "Recibas",
+      url: "/reciba",
+      icon: IconReport,
+    },
+    {
+      title: "Seleccion",
+      url: "/seleccion",
+      icon: IconReport,
     },
     {
       title: "Reportes",
@@ -103,14 +123,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="p-1.5 flex justify-center" style={{
-    background: 'url("pattern-bg.png") center / cover no-repeat rgb(68, 21, 128)',
-  }}>
+              background: 'url("pattern-bg.png") center / cover no-repeat rgb(68, 21, 128)',
+            }}>
               <Link to="/">
-              <img
-            src="Recurso-4@4x-8.png"
-            alt="Green Sun Co. Logo"
-            className="h-18 w-18 object-contain"
-          />
+                <img
+                  src="Recurso-4@4x-8.png"
+                  alt="Green Sun Co. Logo"
+                  className="h-18 w-18 object-contain"
+                />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

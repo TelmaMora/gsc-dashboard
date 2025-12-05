@@ -2,7 +2,6 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Page from "./app/dashboard/page";
 import Pedidos from "./app/pedidos/pedidos";
 import Visitas from "./app/visitas/visitas";
-import Cortes from "./app/cortes/programa";
 import Acopio from "./app/acopio/acopio";
 import CatalogoProveedores from "./app/catalogos/Proveedores";
 import CatalogoCajas from "./app/catalogos/Cajas";
@@ -15,6 +14,11 @@ import Login from "./app/login/page";
 import CatalogoClientes from "./app/catalogos/Clientes";
 import CatalogoClasificaciones from "./app/catalogos/clasificaciones";
 import CatalogoUsuarios from "./app/usuarios/usuarios";
+import PrestamoCajas from "./app/prestamos/PrestamoCajas";
+import Recibas from "./app/recibas/Recibas";
+import Selecciones from "./app/selecciones/Selecciones";
+import ProgramarCorte from "./app/cortes/programa";
+import Cortes from "./app/cortes/corte";
 
 function App() {
   return (
@@ -27,8 +31,12 @@ function App() {
         <Route path="/dashboard" element={<Page />} />
         <Route path="/pedidos" element={<Pedidos />} />
         <Route path="/visitas" element={<Visitas />} />
+         <Route path="/programar-corte" element={<ProgramarCorte />} />
         <Route path="/cortes" element={<Cortes />} />
         <Route path="/acopio" element={<Acopio />} />
+        <Route path="/prestamo-cajas" element={<PrestamoCajas />} />
+        <Route path="/reciba" element={<Recibas />} />
+        <Route path="/seleccion" element={<Selecciones />} />
 
         {/* Catálogos */}
         <Route path="/catalogos/proveedores" element={<CatalogoProveedores />} />

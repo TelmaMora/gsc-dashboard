@@ -27,15 +27,16 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+// -------- INTERFACES ----------
 interface Pedido {
   id: number
-  cliente: string
-  numeroEmbarque: string
-  clasificacion: string
+  cliente: number
+  numero_embarque: string
+  clasificacion: number
   fecha: string
   cajas: number
   kilos: number
-  tipoCaja: string
+  tipo_caja: string
   pallets: number
 }
 
@@ -45,84 +46,125 @@ interface Caja {
   kilosPorCaja: number
 }
 
+interface Cliente {
+  id: number
+  razon_social: string
+}
+
+interface Clasificacion {
+  id: number
+  clasificacion: string
+}
+
+
+// -------- COMPONENTE ----------
 export default function Pedidos() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [pedidos, setPedidos] = useState<Pedido[]>([])
   const [cajas, setCajas] = useState<Caja[]>([])
+  const [clientes, setClientes] = useState<Cliente[]>([])
+  const [clasificaciones, setClasificaciones] = useState<Clasificacion[]>([])
 
-  const [nuevo, setNuevo] = useState<Omit<Pedido, "id">>({
-    cliente: "",
-    numeroEmbarque: "",
-    clasificacion: "",
-    fecha: "",
-    cajas: 0,
-    kilos: 0,
-    tipoCaja: "",
-    pallets: 0,
-  })
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // 🔹 Cargar pedidos
+  const [nuevo, setNuevo] = useState({
+    cliente: 0,
+    numero_embarque: "",
+    clasificacion: 0,
+    fecha: new Date().toISOString().split("T")[0],
+    cajas: 0,
+    kilos: 0,
+    tipo_caja: "",
+    pallets: 0,
+  })
+
+  
+
+  // -------- CARGA ----------
   const cargarPedidos = async () => {
     try {
       const { data } = await axios.get(`${apiUrl}/api/pedidos`)
       setPedidos(data)
     } catch (error) {
-      console.error("Error cargando pedidos:", error)
+      console.error("Error al cargar pedidos:", error)
     }
   }
 
-  // 📦 Cargar cajas para el combobox
+  const cargarClientes = async () => {
+    try {
+      const { data } = await axios.get(`${apiUrl}/api/clientes`)
+      console.log("clientes", data)
+      setClientes(data)
+    } catch (error) {
+      console.error("Error cargando clientes:", error)
+    }
+  }
+
+  const cargarClasificaciones = async () => {
+    try {
+      const { data } = await axios.get(`${apiUrl}/api/clasificaciones`)
+      setClasificaciones(data)
+    } catch (error) {
+      console.error("Error cargando clasificaciones:", error)
+    }
+  }
+
   const cargarCajas = async () => {
     try {
       const { data } = await axios.get(`${apiUrl}/api/cajas`)
       setCajas(data)
     } catch (error) {
-      console.error("Error al cargar cajas:", error)
+      console.error("Error cargando cajas:", error)
     }
   }
 
   useEffect(() => {
     cargarPedidos()
+    cargarClientes()
+    cargarClasificaciones()
     cargarCajas()
   }, [])
 
-  // ➕ Guardar pedido
+  // -------- GUARDAR ----------
   const agregarPedido = async () => {
+    console.log("nuevo", nuevo)
     try {
       const response = await axios.post(`${apiUrl}/api/pedidos`, nuevo)
-      setPedidos([...pedidos, response.data])
       setDialogOpen(false)
       setNuevo({
-        cliente: "",
-        numeroEmbarque: "",
-        clasificacion: "",
-        fecha: "",
+        cliente: 0,
+        numero_embarque: "",
+        clasificacion: 0,
+        fecha: new Date().toISOString().split("T")[0],
         cajas: 0,
         kilos: 0,
-        tipoCaja: "",
+        tipo_caja: "",
         pallets: 0,
       })
-      await cargarPedidos()
+      cargarPedidos()
     } catch (error) {
-      console.error("Error al guardar el pedido:", error)
-      alert("Hubo un problema al guardar el pedido")
+      console.error("Error al guardar pedido:", error)
+      alert("Error al guardar pedido")
     }
   }
 
+  // -------- COLUMNAS ----------
   const columns = [
     { accessorKey: "cliente", header: "Cliente" },
-    { accessorKey: "numeroEmbarque", header: "No. Embarque" },
+    { accessorKey: "numero_embarque", header: "No. Embarque" },
     { accessorKey: "clasificacion", header: "Clasificación" },
     { accessorKey: "fecha", header: "Fecha" },
     { accessorKey: "cajas", header: "Cajas" },
     { accessorKey: "kilos", header: "Kilos" },
-    { accessorKey: "tipoCaja", header: "Tipo Caja" },
+    { accessorKey: "tipo_caja", header: "Tipo Caja" },
     { accessorKey: "pallets", header: "Pallets" },
   ]
 
   const tabs = [{ value: "outline", label: "Listado" }]
 
+  // -----------------------------------------
+  // -----------   RENDER   ------------------
+  // -----------------------------------------
   return (
     <DashboardLayout title="Pedidos">
       <div className="flex justify-between items-center mb-4">
@@ -135,99 +177,177 @@ export default function Pedidos() {
         data={pedidos}
         pageSizeOptions={[5, 10, 20, 50]}
         onAddSection={() => setDialogOpen(true)}
-        onCustomizeColumns={() => console.log("Personalizar columnas")}
       />
 
-      {/* 💬 Diálogo con scroll */}
+      {/* DIALOG */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] p-0">
+        <DialogContent className="max-w-2xl max-h-[80vh] p-0">
           <DialogHeader className="p-4 pb-0">
             <DialogTitle>Nuevo pedido</DialogTitle>
           </DialogHeader>
-          <ScrollArea className="p-4 max-h-[70vh]">
-            <div className="grid gap-3">
-              {Object.keys(nuevo).map((key) => {
-                // 👇 Campo especial: tipoCaja con Combobox
-                if (key === "tipoCaja") {
-                  return (
-                    <div key={key}>
-                      <Label className="capitalize mb-1 block">Tipo de caja</Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full justify-between",
-                              !nuevo.tipoCaja && "text-muted-foreground"
-                            )}
-                          >
-                            {nuevo.tipoCaja
-                              ? cajas.find((c) => c.tipo === nuevo.tipoCaja)?.tipo
-                              : "Seleccionar tipo de caja"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0">
-                          <Command>
-                            <CommandInput placeholder="Buscar caja..." />
-                            <CommandEmpty>No se encontró ninguna caja.</CommandEmpty>
-                            <CommandGroup>
-                              {cajas.map((caja) => (
-                                <CommandItem
-                                  key={caja.id}
-                                  value={caja.tipo}
-                                  onSelect={(value) =>
-                                    setNuevo({ ...nuevo, tipoCaja: value })
-                                  }
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      nuevo.tipoCaja === caja.tipo
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {caja.tipo} ({caja.kilosPorCaja} kg)
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  )
-                }
 
-                // 👇 Campos normales
-                return (
-                  <div key={key}>
-                    <Label className="capitalize">{key}</Label>
-                    <Input
-                      type={
-                        ["cajas", "kilos", "pallets"].includes(key)
-                          ? "number"
-                          : key === "fecha"
-                            ? "date"
-                            : "text"
-                      }
-                      value={nuevo[key as keyof typeof nuevo] as any}
-                      onChange={(e) =>
-                        setNuevo({
-                          ...nuevo,
-                          [key]: ["cajas", "kilos", "pallets"].includes(key)
-                            ? Number(e.target.value)
-                            : e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                )
-              })}
-              <Button onClick={agregarPedido} className="mt-3">
-                Guardar
-              </Button>
+          <ScrollArea className="max-h-[70vh] p-4">
+
+            <div className="grid grid-cols-2 gap-4">
+
+              {/* SELECT CLIENTE */}
+              <div className="col-span-2">
+                <Label>Cliente</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {nuevo.cliente
+                        ? clientes.find(c => c.id === Number(nuevo.cliente))?.razon_social
+                        : "Seleccionar cliente"}
+                      <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder="Buscar cliente..." />
+                      <CommandEmpty>No encontrado</CommandEmpty>
+                      <CommandGroup>
+                        {clientes.map(cli => (
+                          <CommandItem
+                            key={cli.id}
+                            value={cli.razon_social}
+                            onSelect={() => setNuevo({ ...nuevo, cliente: cli.id })}
+                          >
+                            {cli.razon_social}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* SELECT CLASIFICACION */}
+              <div className="col-span-2">
+                <Label>Clasificación</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {nuevo.clasificacion
+                        ? clasificaciones.find(c => c.id === Number(nuevo.clasificacion))?.clasificacion
+                        : "Seleccionar clasificación"}
+                      <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder="Buscar..." />
+                      <CommandEmpty>No encontrado</CommandEmpty>
+                      <CommandGroup>
+                        {clasificaciones.map(cl => (
+                          <CommandItem
+                            key={cl.id}
+                            value={cl.clasificacion}
+                            onSelect={() => setNuevo({ ...nuevo, clasificacion: cl.id })}
+                          >
+                            {cl.clasificacion}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* CAMPOS NORMALES */}
+              <div>
+                <Label>Número de embarque</Label>
+                <Input
+                  value={nuevo.numero_embarque}
+                  onChange={(e) =>
+                    setNuevo({ ...nuevo, numero_embarque: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Fecha</Label>
+                <Input
+                  type="date"
+                  value={nuevo.fecha}
+                  onChange={(e) =>
+                    setNuevo({ ...nuevo, fecha: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Cajas</Label>
+                <Input
+                  type="number"
+                  value={nuevo.cajas}
+                  onChange={(e) =>
+                    setNuevo({ ...nuevo, cajas: Number(e.target.value) })
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Kilos</Label>
+                <Input
+                  type="number"
+                  value={nuevo.kilos}
+                  onChange={(e) =>
+                    setNuevo({ ...nuevo, kilos: Number(e.target.value) })
+                  }
+                />
+              </div>
+
+              {/* SELECT TIPO CAJA */}
+              <div className="col-span-2">
+                <Label>Tipo de caja</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {nuevo.tipo_caja
+                        ? nuevo.tipo_caja
+                        : "Seleccionar tipo de caja"}
+                      <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder="Buscar caja..." />
+                      <CommandEmpty>No encontrado</CommandEmpty>
+                      <CommandGroup>
+                        {cajas.map(caja => (
+                          <CommandItem
+                            key={caja.id}
+                            onSelect={() => setNuevo({ ...nuevo, tipo_caja: caja.tipo })}
+                          >
+                            {caja.tipo} ({caja.kilosPorCaja} kg)
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="col-span-2">
+                <Label>Pallets</Label>
+                <Input
+                  type="number"
+                  value={nuevo.pallets}
+                  onChange={(e) =>
+                    setNuevo({ ...nuevo, pallets: Number(e.target.value) })
+                  }
+                />
+              </div>
+
+              <div className="col-span-2">
+                <Button onClick={agregarPedido} className="w-full">
+                  Guardar
+                </Button>
+              </div>
             </div>
           </ScrollArea>
         </DialogContent>

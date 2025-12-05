@@ -34,25 +34,7 @@ interface Corte {
 export default function Cortes() {
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const [cortes, setCortes] = useState<Corte[]>([
-    {
-      id: 1,
-      visitaId: 1,
-      tipoCorte: "Manual",
-      toneladasReales: 18,
-      pesadaCampo: 17500,
-      fechaEntrega: "2025-11-08",
-      tiempoSeleccion: 5,
-      corrida: "C-001",
-      pagoProveedor: 262500,
-      viaticos: 3500,
-      transporte: 5000,
-      totalCorte: 271000,
-      precioKgBodega: 15.5,
-      observaciones: "Corte sin incidencias",
-      penalizaciones: "Ninguna",
-    },
-  ])
+  const [cortes, setCortes] = useState<Corte[]>([])
 
   const [nuevo, setNuevo] = useState<Omit<Corte, "id">>({
     visitaId: 0,
@@ -164,63 +146,65 @@ export default function Cortes() {
           <DialogHeader>
             <DialogTitle>Nuevo corte</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-3">
-            {Object.keys(nuevo).map((key) => {
-              if (["observaciones", "penalizaciones"].includes(key)) {
+          <div className="max-h-[70vh] overflow-y-auto px-4 pb-4">
+            <div className="grid gap-3">
+              {Object.keys(nuevo).map((key) => {
+                if (["observaciones", "penalizaciones"].includes(key)) {
+                  return (
+                    <div key={key}>
+                      <Label className="capitalize">{key}</Label>
+                      <Textarea
+                        value={nuevo[key as keyof typeof nuevo]}
+                        onChange={(e) =>
+                          setNuevo({ ...nuevo, [key]: e.target.value })
+                        }
+                      />
+                    </div>
+                  )
+                }
                 return (
                   <div key={key}>
                     <Label className="capitalize">{key}</Label>
-                    <Textarea
-                      value={nuevo[key as keyof typeof nuevo]}
+                    <Input
+                      type={
+                        key === "fechaEntrega"
+                          ? "date"
+                          : [
+                            "visitaId",
+                            "toneladasReales",
+                            "pesadaCampo",
+                            "tiempoSeleccion",
+                            "pagoProveedor",
+                            "viaticos",
+                            "transporte",
+                          ].includes(key)
+                            ? "number"
+                            : "text"
+                      }
+                      value={nuevo[key as keyof typeof nuevo] as any}
                       onChange={(e) =>
-                        setNuevo({ ...nuevo, [key]: e.target.value })
+                        setNuevo({
+                          ...nuevo,
+                          [key]:
+                            [
+                              "visitaId",
+                              "toneladasReales",
+                              "pesadaCampo",
+                              "tiempoSeleccion",
+                              "pagoProveedor",
+                              "viaticos",
+                              "transporte",
+                            ].includes(key)
+                              ? Number(e.target.value)
+                              : e.target.value,
+                        })
                       }
                     />
                   </div>
                 )
-              }
-              return (
-                <div key={key}>
-                  <Label className="capitalize">{key}</Label>
-                  <Input
-                    type={
-                      key === "fechaEntrega"
-                        ? "date"
-                        : [
-                            "visitaId",
-                            "toneladasReales",
-                            "pesadaCampo",
-                            "tiempoSeleccion",
-                            "pagoProveedor",
-                            "viaticos",
-                            "transporte",
-                          ].includes(key)
-                        ? "number"
-                        : "text"
-                    }
-                    value={nuevo[key as keyof typeof nuevo] as any}
-                    onChange={(e) =>
-                      setNuevo({
-                        ...nuevo,
-                        [key]:
-                          [
-                            "visitaId",
-                            "toneladasReales",
-                            "pesadaCampo",
-                            "tiempoSeleccion",
-                            "pagoProveedor",
-                            "viaticos",
-                            "transporte",
-                          ].includes(key)
-                            ? Number(e.target.value)
-                            : e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              )
-            })}
-            <Button onClick={agregarCorte}>Guardar</Button>
+              })}
+              <Button onClick={agregarCorte}>Guardar</Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
