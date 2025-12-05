@@ -24,8 +24,7 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ChevronsUpDown } from "lucide-react"
 
 // -------- INTERFACES ----------
 interface Pedido {
@@ -142,6 +141,7 @@ export default function Pedidos() {
         pallets: 0,
       })
       cargarPedidos()
+      console.log(response)
     } catch (error) {
       console.error("Error al guardar pedido:", error)
       alert("Error al guardar pedido")
